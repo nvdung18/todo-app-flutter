@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/todo_provider.dart';
+import 'package:flutter_application_1/views/screens/setting_page.dart';
 import 'package:flutter_application_1/views/screens/task_page.dart';
 import 'package:flutter_application_1/views/styles/app_color.dart';
 import 'package:flutter_application_1/views/widgets/dropdown_hide_under_line_widgets.dart';
 import 'package:flutter_application_1/views/widgets/navbar_widget.dart';
 import 'package:flutter_application_1/views/widgets/todo_widget.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,13 +16,38 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Provider.of<TodoProvider>(context, listen: false).fetchTodos();
+    });
+  }
+
+  void test({TodoProvider? provider1}) async {
+    await provider1?.fetchTodos();
+  }
+
   bool haveTodo = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.settings))],
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingPage(title: 'Setting'),
+                ),
+              );
+            },
+            icon: Icon(Icons.settings),
+          ),
+        ],
         centerTitle: true,
         leading: IconButton(
           onPressed: () {

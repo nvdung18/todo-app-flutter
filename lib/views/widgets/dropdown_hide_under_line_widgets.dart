@@ -7,14 +7,9 @@ class DropdownHideUnderLineWidgets extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color.fromARGB(
-          255,
-          207,
-          207,
-          207,
-        ), // Màu nền cho ô dropdown
+        color: Colors.teal, // Màu nền cho ô dropdown
         borderRadius: BorderRadius.circular(10.0), // Bo tròn góc
-        border: Border.all(color: Colors.grey.shade400),
+        border: Border.all(color: Colors.teal),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: DropdownButtonHideUnderline(
@@ -22,7 +17,7 @@ class DropdownHideUnderLineWidgets extends StatelessWidget {
           borderRadius: BorderRadius.all(
             Radius.circular(10.0),
           ), // Bo tròn popup
-          dropdownColor: const Color.fromARGB(255, 207, 207, 207), // Màu popup
+          dropdownColor: Colors.teal, // Màu popup
           value: 'option1',
           items: const [
             DropdownMenuItem(child: Text('Today'), value: 'option1'),
