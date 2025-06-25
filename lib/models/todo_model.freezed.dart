@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TodoModel {
 
- int get userId; String get id; String get title; bool get isCompleted;
+ int get userId; int get id; String get title; bool get completed;
 /// Create a copy of TodoModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $TodoModelCopyWith<TodoModel> get copyWith => _$TodoModelCopyWithImpl<TodoModel>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TodoModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TodoModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.completed, completed) || other.completed == completed));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,id,title,isCompleted);
+int get hashCode => Object.hash(runtimeType,userId,id,title,completed);
 
 @override
 String toString() {
-  return 'TodoModel(userId: $userId, id: $id, title: $title, isCompleted: $isCompleted)';
+  return 'TodoModel(userId: $userId, id: $id, title: $title, completed: $completed)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $TodoModelCopyWith<$Res>  {
   factory $TodoModelCopyWith(TodoModel value, $Res Function(TodoModel) _then) = _$TodoModelCopyWithImpl;
 @useResult
 $Res call({
- int userId, String id, String title, bool isCompleted
+ int userId, int id, String title, bool completed
 });
 
 
@@ -66,12 +66,12 @@ class _$TodoModelCopyWithImpl<$Res>
 
 /// Create a copy of TodoModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? id = null,Object? title = null,Object? isCompleted = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? id = null,Object? title = null,Object? completed = null,}) {
   return _then(_self.copyWith(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int,id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
+as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,completed: null == completed ? _self.completed : completed // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -83,13 +83,13 @@ as bool,
 @JsonSerializable()
 
 class _TodoModel implements TodoModel {
-  const _TodoModel({required this.userId, required this.id, required this.title, required this.isCompleted});
+  const _TodoModel({required this.userId, required this.id, required this.title, required this.completed});
   factory _TodoModel.fromJson(Map<String, dynamic> json) => _$TodoModelFromJson(json);
 
 @override final  int userId;
-@override final  String id;
+@override final  int id;
 @override final  String title;
-@override final  bool isCompleted;
+@override final  bool completed;
 
 /// Create a copy of TodoModel
 /// with the given fields replaced by the non-null parameter values.
@@ -104,16 +104,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TodoModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TodoModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.completed, completed) || other.completed == completed));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,id,title,isCompleted);
+int get hashCode => Object.hash(runtimeType,userId,id,title,completed);
 
 @override
 String toString() {
-  return 'TodoModel(userId: $userId, id: $id, title: $title, isCompleted: $isCompleted)';
+  return 'TodoModel(userId: $userId, id: $id, title: $title, completed: $completed)';
 }
 
 
@@ -124,7 +124,7 @@ abstract mixin class _$TodoModelCopyWith<$Res> implements $TodoModelCopyWith<$Re
   factory _$TodoModelCopyWith(_TodoModel value, $Res Function(_TodoModel) _then) = __$TodoModelCopyWithImpl;
 @override @useResult
 $Res call({
- int userId, String id, String title, bool isCompleted
+ int userId, int id, String title, bool completed
 });
 
 
@@ -141,12 +141,12 @@ class __$TodoModelCopyWithImpl<$Res>
 
 /// Create a copy of TodoModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? id = null,Object? title = null,Object? isCompleted = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? id = null,Object? title = null,Object? completed = null,}) {
   return _then(_TodoModel(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int,id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
+as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,completed: null == completed ? _self.completed : completed // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

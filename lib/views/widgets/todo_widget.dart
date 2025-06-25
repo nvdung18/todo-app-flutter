@@ -16,52 +16,95 @@ class TodoWidget extends StatelessWidget {
                 margin: EdgeInsets.only(bottom: 15),
                 child: ListTile(
                   contentPadding: EdgeInsets.only(left: 0, right: 16),
-                  title: Text('Todo Item ${todoProvider.todos[i].title}'),
-                  subtitle: Text('Today At 18:20'),
-                  visualDensity: VisualDensity(horizontal: -4),
-                  // leading: IconButton(
-                  //   icon: Icon(Icons.circle_outlined),
-                  //   visualDensity: VisualDensity(horizontal: 1),
-                  //   padding: EdgeInsets.only(left: 4),
-                  //   onPressed: () {
-                  //     // Handle completion
-                  //   }
-                  leading: Checkbox(
-                    value: todoProvider.todos[i].isCompleted,
-                    onChanged: (value) {
-                      // Handle checkbox change
-                    },
-                  ),
-                  trailing: ClipRRect(
-                    borderRadius: BorderRadius.circular(2.0),
-                    child: Container(
-                      width: 50,
-                      height: 25,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent),
-                        color: Colors.blueAccent.withOpacity(0.1),
-                      ),
-                      child: Center(
+                  title: Text(todoProvider.todos[i].title),
+                  // subtitle: Text(todoProvider.todos[i].description),
+                  subtitle: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.1),
+                          border: Border.all(color: Colors.orange),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              Icons.flag_outlined,
-                              size: 16,
-                              color: Colors.blueAccent,
+                              Icons.schedule,
+                              size: 14,
+                              color: Colors.orange,
                             ),
                             SizedBox(width: 4),
                             Text(
-                              '1',
+                              _formatDate(todoProvider.todos[i].date),
                               style: TextStyle(
-                                color: Colors.blueAccent,
-                                fontSize: 12,
+                                color: Colors.orange,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Text(
+                              _formatTime(todoProvider.todos[i].timeOfDay),
+                              style: TextStyle(
+                                color: Colors.orange,
+                                fontSize: 9,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
+                    ],
+                  ),
+                  visualDensity: VisualDensity(horizontal: -4),
+                  leading: Checkbox(
+                    value: todoProvider.todos[i].isCompleted,
+                    onChanged: (value) {
+                      print('Checkbox changed: $value');
+                    },
+                  ),
+
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(width: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(2.0),
+                        child: Container(
+                          width: 50,
+                          height: 25,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.blueAccent),
+                            color: Colors.blueAccent.withOpacity(0.1),
+                          ),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Icon(
+                                  Icons.flag_outlined,
+                                  size: 16,
+                                  color: Colors.blueAccent,
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  todoProvider.todos[i].priority.toString(),
+                                  style: TextStyle(
+                                    color: Colors.blueAccent,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -69,5 +112,15 @@ class TodoWidget extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  String _formatTime(TimeOfDay timeOfDay) {
+    final hour = timeOfDay.hour.toString().padLeft(2, '0');
+    final minute = timeOfDay.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
   }
 }

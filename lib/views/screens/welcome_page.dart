@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/views/screens/signin_page.dart';
-import 'package:flutter_application_1/views/screens/signup_page.dart';
 import 'package:flutter_application_1/views/styles/app_color.dart';
 import 'package:flutter_application_1/views/widgets/welcome_hero_widget.dart';
+import 'package:go_router/go_router.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -43,10 +42,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignUpPage()),
-                      );
+                      context.pushNamed('signup');
                     },
                     child: Text(
                       'Sign up',
@@ -55,10 +51,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignInPage()),
-                      );
+                      context.pushNamed('signin');
                     },
                     child: Text(
                       'Sign in',

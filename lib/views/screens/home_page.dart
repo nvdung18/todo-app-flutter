@@ -6,6 +6,7 @@ import 'package:flutter_application_1/views/styles/app_color.dart';
 import 'package:flutter_application_1/views/widgets/dropdown_hide_under_line_widgets.dart';
 import 'package:flutter_application_1/views/widgets/navbar_widget.dart';
 import 'package:flutter_application_1/views/widgets/todo_widget.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,17 +20,22 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   if (!mounted) return;
+    //   final todoProvider = context.read<TodoProvider>();
+    //   await test(todoProvider: todoProvider);
+    // });
+
+    // Preload image để cache
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      Provider.of<TodoProvider>(context, listen: false).fetchTodos();
+      precacheImage(AssetImage('assets/images/todo.jpg'), context);
     });
   }
 
-  void test({TodoProvider? provider1}) async {
-    await provider1?.fetchTodos();
+  Future<void> test({TodoProvider? todoProvider}) async {
+    await todoProvider?.fetchTodos();
   }
 
-  bool haveTodo = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,12 +44,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingPage(title: 'Setting'),
-                ),
-              );
+              context.pushNamed('setting');
             },
             icon: Icon(Icons.settings),
           ),
@@ -57,57 +58,60 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: (haveTodo
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Search',
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+        child: Consumer<TodoProvider>(
+          builder: (context, todoProvider, child) {
+            return Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: (todoProvider.todos.isNotEmpty
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Search',
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    DropdownHideUnderLineWidgets(),
-                    SizedBox(height: 10),
-                    TodoWidget(),
-                    DropdownHideUnderLineWidgets(),
-                    SizedBox(height: 10),
-                    TodoWidget(),
-                  ],
-                )
-              : Column(
-                  children: [
-                    Center(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: Image.asset(
-                          'assets/images/todo.jpg',
-                          width: 250,
-                          height: 200,
-                          fit: BoxFit.cover,
+                        SizedBox(height: 10),
+                        DropdownHideUnderLineWidgets(),
+                        SizedBox(height: 10),
+                        TodoWidget(),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Image.asset(
+                              'assets/images/todo.jpg',
+                              width: 250,
+                              height: 200,
+                              fit: BoxFit.cover,
+                              cacheWidth: 500, // Cache với resolution thấp hơn
+                              cacheHeight: 400,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      'What do you want to do today?',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Tap + to add your tasks',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ],
-                )),
+                        SizedBox(height: 20),
+                        Text(
+                          'What do you want to do today?',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Tap + to add your tasks',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    )),
+            );
+          },
         ),
       ),
       bottomNavigationBar: NavBarWidget(),
@@ -127,10 +131,7 @@ class _HomePageState extends State<HomePage> {
         ),
         child: IconButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => TaskPage()),
-            );
+            context.pushNamed('add-task');
           },
           icon: Icon(Icons.add),
         ),

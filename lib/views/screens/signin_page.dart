@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/signin_provider.dart';
+import 'package:flutter_application_1/utils/constant.dart';
 import 'package:flutter_application_1/views/screens/home_page.dart';
 import 'package:flutter_application_1/views/styles/app_color.dart';
 import 'package:flutter_application_1/views/widgets/welcome_hero_widget.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -13,10 +18,10 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPw = TextEditingController();
-  final String confirmedEmail = '123';
-  final String confirmPassword = '456';
+
   @override
   Widget build(BuildContext context) {
+    var signInProvider = context.watch<SigninProvider>();
     return Scaffold(
       appBar: AppBar(title: const Text('Sign In')),
       body: Center(
@@ -47,7 +52,7 @@ class _SignInPageState extends State<SignInPage> {
                     backgroundColor: AppColors.primary,
                   ),
                   onPressed: () {
-                    onSignInPress();
+                    onSignInPress(provider: signInProvider);
                   },
                   child: Text(
                     'Sign In',
@@ -88,14 +93,13 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  void onSignInPress() {
-    if (_controllerEmail.text == confirmedEmail &&
-        _controllerPw.text == confirmPassword) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-        (route) => false,
-      );
+  void onSignInPress({SigninProvider? provider}) async {
+    if (provider != null &&
+        await provider.loginProcess(
+          _controllerEmail.text,
+          _controllerPw.text,
+        )) {
+      context.go('/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

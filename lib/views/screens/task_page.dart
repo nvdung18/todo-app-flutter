@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/todo_model2.dart';
+import 'package:flutter_application_1/providers/todo_provider.dart';
 import 'package:flutter_application_1/views/widgets/edit_task_des_widgets.dart';
 import 'package:flutter_application_1/views/widgets/task_priority_dialog_widget.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
@@ -10,6 +14,13 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
+  String taskTitle = '';
+  String taskDescription = '';
+  int taskPriority = 1; // Default priority
+  DateTime? selectedDate;
+  TimeOfDay? selectedTime;
+  bool isCompleted = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,31 +43,45 @@ class _TaskPageState extends State<TaskPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.circle_outlined),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Do Math Homework',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                Expanded(
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.circle_outlined),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              taskTitle.isEmpty ? 'Do something' : taskTitle,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              taskDescription.isEmpty
+                                  ? 'Description of the task goes here'
+                                  : taskDescription,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Do chapter 2 to 5 for next week',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-                EditTaskDescriptionWidgets(),
+                IconButton(
+                  icon: Icon(Icons.edit_outlined),
+                  onPressed: () => _navigateToEditTaskDescription(context),
+                ),
               ],
             ),
             SizedBox(height: 20),
@@ -88,28 +113,40 @@ class _TaskPageState extends State<TaskPage> {
                   child: TextButton(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     onPressed: () async {
-                      DateTime? selectedDate = await showDatePicker(
+                      selectedDate = await showDatePicker(
                         context: context,
                         initialDate: DateTime.now(),
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2101),
                       );
                       if (selectedDate != null) {
-                        // Handle the selected date
+                        setState(() {
+                          selectedDate = DateTime.now();
+                        });
                       }
                       // Implement time picker logic here
-                      TimeOfDay? selectedTime = await showTimePicker(
+                      selectedTime = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.now(),
                       );
                       if (selectedTime != null) {
-                        // Handle the selected time
+                        setState(() {
+                          selectedTime = TimeOfDay.now();
+                        });
                       }
                     },
-                    child: Icon(
-                      Icons.calendar_month_outlined,
-                      color: Colors.blueAccent,
-                    ),
+                    child: selectedDate != null && selectedTime != null
+                        ? Text(
+                            '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year} - ${selectedTime!.hour}:${selectedTime!.minute}',
+                            style: TextStyle(
+                              color: Colors.blueAccent,
+                              fontSize: 16,
+                            ),
+                          )
+                        : Icon(
+                            Icons.calendar_month_outlined,
+                            color: Colors.blueAccent,
+                          ),
                   ),
                 ),
               ],
@@ -143,18 +180,13 @@ class _TaskPageState extends State<TaskPage> {
                   child: TextButton(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return TaskPriorityDialogWidget();
-                        },
-                      );
+                      _navigateToTaskPriorityDialog(context);
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '1',
+                          taskPriority.toString(),
                           style: TextStyle(
                             color: Colors.blueAccent,
                             fontSize: 16,
@@ -173,24 +205,91 @@ class _TaskPageState extends State<TaskPage> {
               ],
             ),
             Spacer(),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueGrey,
-                minimumSize: Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), // Bo tròn nhẹ
-                ),
-              ),
-              child: Text(
-                'Add Task',
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
+            Consumer<TodoProvider>(
+              builder: (context, todoProvider, child) {
+                return ElevatedButton(
+                  onPressed: () {
+                    addTask(todoProvider);
+                    context.go('/home'); // Navigate to the todo page
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueGrey,
+                    minimumSize: Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12), // Bo tròn nhẹ
+                    ),
+                  ),
+                  child: Text(
+                    'Add Task',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                );
+              },
             ),
             SizedBox(height: 20),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _navigateToEditTaskDescription(BuildContext context) async {
+    final result = await showDialog(
+      barrierDismissible: false,
+      useSafeArea: true,
+      context: context,
+      builder: (context) {
+        return EditTaskDescriptionWidgets(
+          taskTitle: taskTitle,
+          taskDescription: taskDescription,
+        );
+      },
+    );
+    if (!context.mounted) return;
+    if (result == 'You pressed Cancel') {
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text('$result')));
+      return;
+    }
+    setState(() {
+      // Thêm setState để cập nhật UI
+      taskTitle = result['title'] ?? taskTitle;
+      taskDescription = result['description'] ?? taskDescription;
+    });
+  }
+
+  Future<void> _navigateToTaskPriorityDialog(BuildContext context) async {
+    final result = await showDialog(
+      barrierDismissible: false,
+      useSafeArea: true,
+      context: context,
+      builder: (context) {
+        return TaskPriorityDialogWidget();
+      },
+    );
+    if (!context.mounted) return;
+    if (result == 'You pressed Cancel') {
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text('$result')));
+      return;
+    } else {
+      setState(() {
+        taskPriority = result;
+      });
+    }
+  }
+
+  Future<bool> addTask(TodoProvider todoProvider) async {
+    TodoModel2 newTask = TodoModel2(
+      title: taskTitle,
+      description: taskDescription,
+      priority: taskPriority,
+      date: selectedDate ?? DateTime.now(),
+      timeOfDay: selectedTime ?? TimeOfDay.now(),
+      isCompleted: isCompleted,
+    );
+    return todoProvider.addTodo(newTask);
   }
 }

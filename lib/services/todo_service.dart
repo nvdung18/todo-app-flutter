@@ -7,14 +7,11 @@ class TodoService {
     final response = await http.get(
       Uri.parse('https://jsonplaceholder.typicode.com/todos'),
     );
-    if (response.statusCode == 200) {
-      var jsonResponse = convert.jsonDecode(response.body);
-      // print(jsonResponse);
-      return ((jsonResponse as List)
-          .map((json) => TodoModel.fromJson(json))
-          .toList());
-    } else {
-      throw Exception('Failed to load todos');
-    }
+    final List<dynamic> jsonResponse = convert.jsonDecode(response.body);
+    print(jsonResponse);
+    return jsonResponse
+        .take(4)
+        .map((todo) => TodoModel.fromJson(todo as Map<String, dynamic>))
+        .toList();
   }
 }

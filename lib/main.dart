@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/signin_provider.dart';
 import 'package:flutter_application_1/providers/theme_provider.dart';
 import 'package:flutter_application_1/providers/todo_provider.dart';
+import 'package:flutter_application_1/route.dart';
 import 'package:flutter_application_1/utils/constant.dart';
 import 'package:flutter_application_1/views/screens/home_page.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +20,7 @@ void main() async {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => TodoProvider()),
+          ChangeNotifierProvider(create: (context) => SigninProvider()),
         ],
         child: const MyApp(),
       ),
@@ -37,8 +40,15 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     var themeProvider = context.watch<ThemeProvider>();
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Todo App',
+      routerConfig: route,
+      // initialRoute: '/',
+      // routes: {
+      //   '/home': (context) => const HomePage(),
+      //   '/signin': (context) => const SignInPage(),
+      //   '/signup': (context) => const SignUpPage(),
+      // },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -48,7 +58,6 @@ class _MyAppState extends State<MyApp> {
               : Brightness.light,
         ),
       ),
-      home: HomePage(),
     );
   }
 }

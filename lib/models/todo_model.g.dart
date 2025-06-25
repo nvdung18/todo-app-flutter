@@ -8,9 +8,9 @@ part of 'todo_model.dart';
 
 _TodoModel _$TodoModelFromJson(Map<String, dynamic> json) => _TodoModel(
   userId: (json['userId'] as num).toInt(),
-  id: json['id'] as String,
+  id: (json['id'] as num).toInt(),
   title: json['title'] as String,
-  isCompleted: json['isCompleted'] as bool,
+  completed: json['completed'] as bool,
 );
 
 Map<String, dynamic> _$TodoModelToJson(_TodoModel instance) =>
@@ -18,5 +18,5 @@ Map<String, dynamic> _$TodoModelToJson(_TodoModel instance) =>
       'userId': instance.userId,
       'id': instance.id,
       'title': instance.title,
-      'isCompleted': instance.isCompleted,
+      'completed': instance.completed,
     };
