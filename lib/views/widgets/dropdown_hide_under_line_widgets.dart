@@ -1,7 +1,29 @@
 import 'package:flutter/material.dart';
 
-class DropdownHideUnderLineWidgets extends StatelessWidget {
-  const DropdownHideUnderLineWidgets({super.key});
+class DropdownHideUnderLineWidgets extends StatefulWidget {
+  final Function(bool) onChanged;
+  final bool initialValue;
+
+  const DropdownHideUnderLineWidgets({
+    super.key,
+    required this.onChanged,
+    this.initialValue = false,
+  });
+
+  @override
+  State<DropdownHideUnderLineWidgets> createState() =>
+      _DropdownHideUnderLineWidgetsState();
+}
+
+class _DropdownHideUnderLineWidgetsState
+    extends State<DropdownHideUnderLineWidgets> {
+  late bool isCompleted;
+
+  @override
+  void initState() {
+    super.initState();
+    isCompleted = widget.initialValue;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,19 +35,35 @@ class DropdownHideUnderLineWidgets extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: DropdownButtonHideUnderline(
-        child: DropdownButton(
+        child: DropdownButton<bool>(
           borderRadius: BorderRadius.all(
             Radius.circular(10.0),
           ), // Bo tròn popup
           dropdownColor: Colors.teal, // Màu popup
-          value: 'option1',
+          value: isCompleted,
           items: const [
-            DropdownMenuItem(child: Text('Today'), value: 'option1'),
-            DropdownMenuItem(child: Text('Completed'), value: 'option2'),
+            DropdownMenuItem<bool>(
+              value: false,
+              child: Text(
+                'Not Completed',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            DropdownMenuItem<bool>(
+              value: true,
+              child: Text('Completed', style: TextStyle(color: Colors.white)),
+            ),
           ],
           onChanged: (value) {
-            // Handle dropdown value change
+            if (value != null) {
+              setState(() {
+                isCompleted = value;
+              });
+              widget.onChanged(value); // Gọi callback để parent widget biết
+            }
           },
+          icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ),
       ),
     );

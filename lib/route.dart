@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/auth_wrapper.dart';
-import 'package:flutter_application_1/views/screens/home_page.dart';
+import 'package:flutter_application_1/models/todo_model2.dart';
+import 'package:flutter_application_1/views/screens/addtask_page.dart';
+import 'package:flutter_application_1/views/screens/edittask_page.dart';
+import 'package:flutter_application_1/views/screens/list_friend_page.dart';
 import 'package:flutter_application_1/views/screens/setting_page.dart';
 import 'package:flutter_application_1/views/screens/signin_page.dart';
 import 'package:flutter_application_1/views/screens/signup_page.dart';
-import 'package:flutter_application_1/views/screens/task_page.dart';
+import 'package:flutter_application_1/views/widget_tree.dart';
+
 import 'package:go_router/go_router.dart';
 
 /// The route configuration.
@@ -35,7 +39,7 @@ final GoRouter route = GoRouter(
     GoRoute(
       path: '/home',
       builder: (BuildContext context, GoRouterState state) {
-        return const HomePage();
+        return WidgetTree();
       },
       routes: <RouteBase>[
         GoRoute(
@@ -46,10 +50,26 @@ final GoRouter route = GoRouter(
           },
         ),
         GoRoute(
+          path: 'edit-task/:id', // id here is index of task in list todos
+          name: 'edit-task',
+          builder: (context, state) {
+            final id = state.pathParameters['id'];
+            final todo = state.extra as TodoModel2?;
+            return EditTaskPage(task: todo!, taskIndex: int.parse(id ?? '0'));
+          },
+        ),
+        GoRoute(
           path: 'add-task',
           name: 'add-task',
           builder: (context, state) {
-            return TaskPage();
+            return const AddTaskPage();
+          },
+        ),
+        GoRoute(
+          path: 'list-friend',
+          name: 'list-friend',
+          builder: (context, state) {
+            return const ListFriendPage();
           },
         ),
       ],

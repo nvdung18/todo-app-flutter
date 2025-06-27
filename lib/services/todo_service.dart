@@ -8,7 +8,6 @@ class TodoService {
       Uri.parse('https://jsonplaceholder.typicode.com/todos'),
     );
     final List<dynamic> jsonResponse = convert.jsonDecode(response.body);
-    print(jsonResponse);
     return jsonResponse
         .take(4)
         .map((todo) => TodoModel.fromJson(todo as Map<String, dynamic>))

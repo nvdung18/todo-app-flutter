@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/app_provider.dart';
 import 'package:flutter_application_1/providers/theme_provider.dart';
 import 'package:flutter_application_1/utils/constant.dart';
 import 'package:go_router/go_router.dart';
@@ -44,29 +45,9 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ],
             ),
-            Row(
-              children: [
-                Text('Logout', style: Theme.of(context).textTheme.bodyLarge),
-                Spacer(),
-                IconButton(
-                  icon: Icon(Icons.logout),
-                  onPressed: () {
-                    onLogoutPress(context);
-                  },
-                ),
-              ],
-            ),
           ],
         ),
       ),
     );
-  }
-
-  Future<void> onLogoutPress(BuildContext context) async {
-    // Handle logout logic here
-    // For example, clear user data, navigate to login page, etc.
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(KConstants.signInKey, false);
-    context.go('/');
   }
 }

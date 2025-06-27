@@ -4,13 +4,14 @@ import 'package:flutter_application_1/providers/theme_provider.dart';
 import 'package:flutter_application_1/providers/todo_provider.dart';
 import 'package:flutter_application_1/route.dart';
 import 'package:flutter_application_1/utils/constant.dart';
-import 'package:flutter_application_1/views/screens/home_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:flutter_application_1/views/screens/welcome_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   final prefs = await SharedPreferences.getInstance();
   final isDarkMode = prefs.getBool(KConstants.themeModeKey) ?? false;
 

@@ -3,6 +3,7 @@ import 'package:flutter_application_1/models/todo_model2.dart';
 // import 'package:flutter_application_1/services/todo_service.dart';
 import 'package:flutter_application_1/utils/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert'; // Add this import
 
 class TodoProvider with ChangeNotifier {
   // final TodoService _todoService = TodoService();
@@ -13,9 +14,10 @@ class TodoProvider with ChangeNotifier {
   Future<bool> addTodo(TodoModel2 todo) async {
     _todos.add(todo);
     final prefs = await SharedPreferences.getInstance();
+    // Convert to JSON strings properly
     await prefs.setStringList(
       KConstants.todoKey,
-      _todos.map((e) => e.toJson()).cast<String>().toList(),
+      _todos.map((e) => jsonEncode(e.toJson())).toList(),
     );
     notifyListeners();
     return true;
@@ -24,9 +26,10 @@ class TodoProvider with ChangeNotifier {
   Future<void> removeTodo(int index) async {
     _todos.removeAt(index);
     final prefs = await SharedPreferences.getInstance();
+    // Convert to JSON strings properly
     await prefs.setStringList(
       KConstants.todoKey,
-      _todos.map((e) => e.toJson()).cast<String>().toList(),
+      _todos.map((e) => jsonEncode(e.toJson())).toList(),
     );
     notifyListeners();
   }
@@ -34,25 +37,25 @@ class TodoProvider with ChangeNotifier {
   Future<void> updateTodo(int index, TodoModel2 todo) async {
     _todos[index] = todo;
     final prefs = await SharedPreferences.getInstance();
+    // Convert to JSON strings properly
     await prefs.setStringList(
       KConstants.todoKey,
-      _todos.map((e) => e.toJson()).cast<String>().toList(),
+      _todos.map((e) => jsonEncode(e.toJson())).toList(),
     );
     notifyListeners();
   }
 
   Future<void> fetchTodos() async {
     try {
-      // _todos = await _todoService.fetchTodos();
-      // print(_todos);
       final prefs = await SharedPreferences.getInstance();
       final todoList = prefs.getStringList(KConstants.todoKey) ?? [];
-      _todos = todoList
-          .map((e) => TodoModel2.fromJson(e as Map<String, dynamic>))
-          .toList();
+      // Parse JSON strings properly
+      _todos = todoList.map((e) => TodoModel2.fromJson(jsonDecode(e))).toList();
       notifyListeners();
     } catch (e) {
-      // Handle error
+      print('Error fetching todos: $e');
+      _todos = []; // Reset to empty list on error
+      notifyListeners();
     }
   }
 }

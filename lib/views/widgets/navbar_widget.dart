@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/app_provider.dart';
+import 'package:flutter_application_1/utils/constant.dart';
 
 class NavBarWidget extends StatelessWidget {
   const NavBarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
-      destinations: [
-        NavigationDestination(icon: Icon(Icons.home), label: 'Index'),
-        NavigationDestination(
-          icon: Icon(Icons.calendar_month),
-          label: 'Calendar',
-        ),
-        NavigationDestination(icon: Icon(Icons.lock_clock), label: 'Focus'),
-        NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
-      ],
-      onDestinationSelected: (int index) {
-        // Handle navigation
+    return ValueListenableBuilder(
+      valueListenable: selectedPageNotifier,
+      builder: (context, selectedPage, child) {
+        return NavigationBar(
+          destinations: [
+            for (var item in KNavbar.pageNavBar())
+              NavigationDestination(
+                icon: Icon(item['icon']),
+                label: item['title'],
+              ),
+          ],
+          onDestinationSelected: (int index) {
+            selectedPageNotifier.value = index;
+          },
+          selectedIndex: selectedPage, // Set the initial selected index
+        );
       },
-      selectedIndex: 0, // Set the initial selected index
     );
   }
 }

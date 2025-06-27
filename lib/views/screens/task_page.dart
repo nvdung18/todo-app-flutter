@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/todo_model2.dart';
 import 'package:flutter_application_1/providers/todo_provider.dart';
+import 'package:flutter_application_1/utils/index.dart';
 import 'package:flutter_application_1/views/widgets/edit_task_des_widgets.dart';
 import 'package:flutter_application_1/views/widgets/task_priority_dialog_widget.dart';
 import 'package:go_router/go_router.dart';
@@ -47,8 +48,15 @@ class _TaskPageState extends State<TaskPage> {
                   child: Row(
                     children: [
                       IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.circle_outlined),
+                        onPressed: () {
+                          handleCheckBoxChanged();
+                        },
+                        icon: Icon(
+                          isCompleted
+                              ? Icons.check_circle
+                              : Icons.circle_outlined,
+                          color: isCompleted ? Colors.green : Colors.grey,
+                        ),
                       ),
                       Expanded(
                         child: Column(
@@ -119,25 +127,21 @@ class _TaskPageState extends State<TaskPage> {
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2101),
                       );
-                      if (selectedDate != null) {
-                        setState(() {
-                          selectedDate = DateTime.now();
-                        });
-                      }
+                      setState(() {
+                        selectedDate = selectedDate ?? DateTime.now();
+                      });
                       // Implement time picker logic here
                       selectedTime = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.now(),
                       );
-                      if (selectedTime != null) {
-                        setState(() {
-                          selectedTime = TimeOfDay.now();
-                        });
-                      }
+                      setState(() {
+                        selectedTime = selectedTime ?? TimeOfDay.now();
+                      });
                     },
                     child: selectedDate != null && selectedTime != null
                         ? Text(
-                            '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year} - ${selectedTime!.hour}:${selectedTime!.minute}',
+                            Utils.formatDateTime(selectedDate, selectedTime),
                             style: TextStyle(
                               color: Colors.blueAccent,
                               fontSize: 16,
@@ -279,6 +283,12 @@ class _TaskPageState extends State<TaskPage> {
         taskPriority = result;
       });
     }
+  }
+
+  void handleCheckBoxChanged() {
+    setState(() {
+      isCompleted = !isCompleted;
+    });
   }
 
   Future<bool> addTask(TodoProvider todoProvider) async {

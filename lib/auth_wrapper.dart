@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/utils/constant.dart';
-import 'package:flutter_application_1/views/screens/home_page.dart';
 import 'package:flutter_application_1/views/screens/welcome_page.dart';
+import 'package:flutter_application_1/views/widget_tree.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthWrapper extends StatelessWidget {
@@ -26,7 +26,7 @@ class AuthWrapper extends StatelessWidget {
 
     if (isSignedIn) {
       // User is signed in, navigate to HomePage
-      return HomePage();
+      return WidgetTree();
     }
     return const WelcomePage();
   }
