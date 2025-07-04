@@ -40,16 +40,29 @@ class _SignInPageState extends State<SignInPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   WelcomeHeroWidget(height: 200),
+                  // CustomTextField(
+                  //   label: 'Email',
+                  //   controller: _controllerEmail,
+                  //   validator: (value) {
+                  //     if (value == null || value.isEmpty) {
+                  //       return 'Email is required';
+                  //     }
+                  //     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                  //     if (!emailRegex.hasMatch(value)) {
+                  //       return 'Enter a valid email';
+                  //     }
+                  //     return null;
+                  //   },
+                  // ),
                   CustomTextField(
-                    label: 'Email',
+                    label: 'Username',
                     controller: _controllerEmail,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Email is required';
+                        return 'Username is required';
                       }
-                      final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                      if (!emailRegex.hasMatch(value)) {
-                        return 'Enter a valid email';
+                      if (value.length < 6) {
+                        return 'Minimum 6 characters';
                       }
                       return null;
                     },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/user_provider.dart';
 import 'package:flutter_application_1/services/api_service.dart';
 // ignore: unused_import
 import 'package:logger/logger.dart';
@@ -26,7 +27,8 @@ class _ListFriendPageState extends State<ListFriendPage> {
         foregroundColor: Theme.of(context).primaryColor,
       ),
       body: FutureBuilder(
-        future: ApiService.userService.getUsers(),
+        // future: ApiService.userService.getUsers(),
+        future: UserProvider().fetchUsers(),
         builder: (context, asyncSnapshot) {
           if (asyncSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

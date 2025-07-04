@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/configs/api_config.dart';
 import 'package:flutter_application_1/providers/app_provider.dart';
+import 'package:flutter_application_1/services/api_service.dart';
 import 'package:flutter_application_1/utils/constant.dart';
+import 'package:flutter_application_1/utils/context_extension.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -105,8 +108,60 @@ class _ProfilePageState extends State<ProfilePage> {
                 _buildSettingsItem(
                   icon: Icons.person_outline,
                   text: 'Change account name',
-                  onTap: () {
-                    // Navigate to change name
+                  onTap: () async {
+                    final result = await showDialog(
+                      barrierDismissible: false,
+                      useSafeArea: true,
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Change account name'),
+                          content: TextField(
+                            controller: TextEditingController(text: 'John Doe'),
+                            decoration: InputDecoration(
+                              hintText: 'Enter new account name',
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop('You pressed Cancel');
+                              },
+                              child: Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                final response =
+                                    await ApiService.getUserService(
+                                      ApiConfig.instance.getApiService1(),
+                                    ).updateUser("1", {"lastName": "New Name"});
+                                print(response);
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Save'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                    if (!context.mounted) return;
+                    if (result == 'You pressed Cancel') {
+                      ScaffoldMessenger.of(context)
+                        ..removeCurrentSnackBar()
+                        ..showSnackBar(
+                          SnackBar(
+                            content: Text('$result'),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      return;
+                    }
+                    if (context.mounted) {
+                      // Navigate về home trước
+                      context.showSuccessAndNavigate(
+                        message: 'Change name successfully',
+                      );
+                    }
                   },
                 ),
                 _buildSettingsItem(
@@ -129,6 +184,61 @@ class _ProfilePageState extends State<ProfilePage> {
                   onTap: () {
                     selectedPageNotifier.value = 0;
                     onLogoutPress(context);
+                  },
+                ),
+                _buildSettingsItem(
+                  icon: Icons.delete,
+                  text: 'Delete account',
+                  onTap: () async {
+                    // Handle account deletion logic
+                    final result = await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Delete Account'),
+                          content: Text(
+                            'Are you sure you want to delete your account?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop('You pressed Cancel');
+                              },
+                              child: Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                // Call API to delete account
+                                final response =
+                                    await ApiService.getUserService(
+                                      ApiConfig.instance.getApiService2(),
+                                    ).deleteUser("1");
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Delete'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                    if (!context.mounted) return;
+                    if (result == 'You pressed Cancel') {
+                      ScaffoldMessenger.of(context)
+                        ..removeCurrentSnackBar()
+                        ..showSnackBar(
+                          SnackBar(
+                            content: Text('$result'),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      return;
+                    }
+                    if (context.mounted) {
+                      // Navigate về home trước
+                      context.showSuccessAndNavigate(
+                        message: 'Delete account successfully',
+                      );
+                    }
                   },
                 ),
               ],

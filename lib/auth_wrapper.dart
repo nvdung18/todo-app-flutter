@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/utils/constant.dart';
+import 'package:flutter_application_1/views/screens/blog_page.dart';
 import 'package:flutter_application_1/views/screens/welcome_page.dart';
 import 'package:flutter_application_1/views/widget_tree.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_application_1/providers/todo_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class TodoWidget extends StatelessWidget {
-  const TodoWidget({super.key, this.isCompleted = false});
+  const TodoWidget({
+    super.key,
+    this.isCompleted = false,
+    this.filteredTodosByDate,
+    this.onDaysWithTodo,
+  });
 
   final bool isCompleted;
-
+  final DateTime? filteredTodosByDate;
+  final void Function(List<DateTime>)? onDaysWithTodo;
   @override
   Widget build(BuildContext context) {
     return Consumer<TodoProvider>(
@@ -17,16 +24,36 @@ class TodoWidget extends StatelessWidget {
             .asMap()
             .entries
             .where((entry) => entry.value.isCompleted == isCompleted)
+            .where(
+              (entry) =>
+                  filteredTodosByDate == null ||
+                  (entry.value.date.year == filteredTodosByDate!.year &&
+                      entry.value.date.month == filteredTodosByDate!.month &&
+                      entry.value.date.day == filteredTodosByDate!.day),
+            )
             .toList();
 
-        if (filteredTodos.isEmpty) {
-          return Center(
-            child: Text(
-              isCompleted ? 'No completed tasks yet' : 'No pending tasks',
-              style: TextStyle(color: Colors.grey, fontSize: 16),
-            ),
-          );
+        final daysWithTodo = todoProvider.todos
+            .map(
+              (todo) =>
+                  DateTime(todo.date.year, todo.date.month, todo.date.day),
+            )
+            .toSet()
+            .toList();
+        if (onDaysWithTodo != null) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            onDaysWithTodo!(daysWithTodo);
+          });
         }
+
+        // if (filteredTodos.isEmpty) {
+        //   return Center(
+        //     child: Text(
+        //       isCompleted ? 'No completed tasks yet' : 'No pending tasks',
+        //       style: TextStyle(color: Colors.grey, fontSize: 16),
+        //     ),
+        //   );
+        // }
 
         return ListView.builder(
           shrinkWrap: true,

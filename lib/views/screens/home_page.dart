@@ -35,6 +35,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // showDialog(
+    //   context: context,
+    //   builder: (context) {
+    //     return const AlertDialog(title: Text('Alert Dialog'));
+    //   },
+    // );
+    // const int count = 0;
     return SingleChildScrollView(
       child: Consumer<TodoProvider>(
         builder: (context, todoProvider, child) {
@@ -46,6 +53,12 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // OutlinedButton(
+                      //   child: const Text('Click me!'),
+                      //   onPressed: () {
+                      //     throw Exception('This is a test exception');
+                      //   },
+                      // ),
                       TextField(
                         decoration: InputDecoration(
                           labelText: 'Search',
@@ -70,6 +83,15 @@ class _HomePageState extends State<HomePage> {
                   )
                 : Column(
                     children: [
+                      // OutlinedButton(
+                      //   child: const Text('Click me!'),
+                      //   onPressed: () async {
+                      //     const channel = MethodChannel(
+                      //       'crashy-custom-channel',
+                      //     );
+                      //     await channel.invokeMethod('blah');
+                      //   },
+                      // ),
                       Center(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),

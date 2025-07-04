@@ -25,7 +25,28 @@ class CalenderPage extends StatefulWidget {
 }
 
 class _CalenderPageState extends State<CalenderPage> {
-  int selectedDay = 9;
+  int selectedDayIndex = 0;
+  DateTime selectedDate = DateTime.now();
+  List<DateTime> weekDates = [];
+  bool isCompleted = false;
+  List<DateTime> daysWithTodo = [];
+  @override
+  void initState() {
+    super.initState();
+    _updateWeekDates(selectedDate);
+    // Đặt selectedDayIndex đúng vị trí trong tuần (chủ nhật là 0, thứ hai là 1, ...)
+    selectedDayIndex = selectedDate.weekday % 7;
+  }
+
+  void _updateWeekDates(DateTime date) {
+    int daysFromSunday = date.weekday % 7;
+    DateTime startOfWeek = date.subtract(Duration(days: daysFromSunday));
+    weekDates = List.generate(
+      7,
+      (index) => startOfWeek.add(Duration(days: index)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -51,73 +72,158 @@ class _CalenderPageState extends State<CalenderPage> {
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.arrow_back),
-                      Expanded(
-                        child: SizedBox(
-                          width: 100,
-                          child: Text(
-                            'September 2023',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          // Handle back navigation
+                          setState(() {
+                            // Giả sử bạn muốn quay lại ngày trước đó
+                            selectedDate = selectedDate.subtract(
+                              Duration(days: 7),
+                            );
+                            _updateWeekDates(selectedDate);
+                            selectedDayIndex = selectedDate.weekday - 1;
+                          });
+                        },
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          // Handle month change logic here
+                          final date = await showDatePicker(
+                            context: context,
+                            initialDate: selectedDate,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+
+                          if (date != null && date != selectedDate) {
+                            setState(() {
+                              selectedDate = date;
+                              _updateWeekDates(selectedDate);
+                              selectedDayIndex = selectedDate.weekday - 1;
+                            });
+                          }
+                        },
+                        child: Text(
+                          '${monthsOfYear[selectedDate.month - 1]} ${selectedDate.year}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      Icon(Icons.arrow_forward),
+                      IconButton(
+                        icon: Icon(Icons.arrow_forward),
+                        onPressed: () {
+                          // Handle forward navigation
+                          setState(() {
+                            // Giả sử bạn muốn quay lại ngày trước đó
+                            selectedDate = selectedDate.add(Duration(days: 7));
+                            _updateWeekDates(selectedDate);
+                            selectedDayIndex = selectedDate.weekday - 1;
+                          });
+                        },
+                      ),
                     ],
                   ),
                   SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
-                        .map(
-                          (day) => InkWell(
-                            onTap: () {
-                              print(1);
-                            },
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(6.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      day,
+                    children: weekDates.asMap().entries.map((entry) {
+                      final idx = entry.key;
+                      final date = entry.value;
+                      final isSelected =
+                          date.day == selectedDate.day &&
+                          date.month == selectedDate.month &&
+                          date.year == selectedDate.year;
+                      final isWeekend =
+                          idx == 0 || idx == 6; // Chủ nhật hoặc thứ 7
+
+                      double screenWidth = MediaQuery.of(context).size.width;
+                      double horizontalPadding = 20;
+                      double cardWidth = (screenWidth - horizontalPadding) / 7;
+
+                      // Kiểm tra ngày này có todo không
+                      final hasTodo = daysWithTodo.any(
+                        (d) =>
+                            d.year == date.year &&
+                            d.month == date.month &&
+                            d.day == date.day,
+                      );
+                      return InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedDate = date;
+                            selectedDayIndex = idx;
+                          });
+                        },
+                        child: SizedBox(
+                          width: cardWidth,
+                          child: Card(
+                            color: isSelected ? Colors.cyan : Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    daysOfWeek[idx],
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.white
+                                          : isWeekend
+                                          ? Colors.red
+                                          : Colors.black,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Center(
+                                    child: Text(
+                                      date.day.toString(),
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : Colors.black,
+                                        fontWeight: FontWeight.normal,
                                       ),
                                     ),
-                                    SizedBox(height: 4),
-                                    Center(
-                                      child: Text(
-                                        textAlign: TextAlign.center,
-                                        10.toString(),
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.normal,
+                                  ),
+                                  // Hiển thị dấu chấm nếu có todo
+                                  if (hasTodo)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2.0),
+                                      child: Container(
+                                        width: 6,
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? Colors.white
+                                              : Colors.cyan,
+                                          shape: BoxShape.circle,
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
+                                ],
                               ),
                             ),
                           ),
-                        )
-                        .toList(),
+                        ),
+                      );
+                    }).toList(),
                   ),
                   // Calendar dates
                 ],
@@ -126,7 +232,7 @@ class _CalenderPageState extends State<CalenderPage> {
           ),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(20.0),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -142,11 +248,22 @@ class _CalenderPageState extends State<CalenderPage> {
                             Expanded(
                               flex: 1,
                               child: OutlinedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    isCompleted = !isCompleted;
+                                  });
+                                },
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    Colors.blue,
-                                  ),
+                                  backgroundColor: !isCompleted
+                                      ? MaterialStateProperty.all(Colors.blue)
+                                      : MaterialStateProperty.all(
+                                          const Color.fromARGB(
+                                            255,
+                                            204,
+                                            204,
+                                            204,
+                                          ),
+                                        ),
                                   shape: MaterialStateProperty.all(
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(4.0),
@@ -154,11 +271,15 @@ class _CalenderPageState extends State<CalenderPage> {
                                   ),
                                 ),
                                 child: Text(
-                                  'Today',
+                                  'Not completed',
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    fontWeight: !isCompleted
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    color: !isCompleted
+                                        ? Colors.white
+                                        : Colors.black,
                                   ),
                                 ),
                               ),
@@ -167,8 +288,22 @@ class _CalenderPageState extends State<CalenderPage> {
                             Expanded(
                               flex: 1,
                               child: OutlinedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    isCompleted = !isCompleted;
+                                  });
+                                },
                                 style: ButtonStyle(
+                                  backgroundColor: isCompleted
+                                      ? MaterialStateProperty.all(Colors.blue)
+                                      : MaterialStateProperty.all(
+                                          const Color.fromARGB(
+                                            255,
+                                            204,
+                                            204,
+                                            204,
+                                          ),
+                                        ),
                                   shape: MaterialStateProperty.all(
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(4.0),
@@ -178,8 +313,13 @@ class _CalenderPageState extends State<CalenderPage> {
                                 child: Text(
                                   'Completed',
                                   style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: isCompleted
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    color: isCompleted
+                                        ? Colors.white
+                                        : Colors.black,
                                   ),
                                 ),
                               ),
@@ -189,7 +329,15 @@ class _CalenderPageState extends State<CalenderPage> {
                       ),
                     ),
                     SizedBox(height: 10),
-                    TodoWidget(),
+                    TodoWidget(
+                      isCompleted: isCompleted,
+                      filteredTodosByDate: selectedDate,
+                      onDaysWithTodo: (days) {
+                        setState(() {
+                          daysWithTodo = days;
+                        });
+                      },
+                    ),
                   ],
                 ),
               ),

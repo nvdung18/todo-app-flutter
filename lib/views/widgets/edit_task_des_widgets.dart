@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/views/widgets/text_field_widget.dart';
 
 class EditTaskDescriptionWidgets extends StatelessWidget {
   const EditTaskDescriptionWidgets({
@@ -12,6 +13,7 @@ class EditTaskDescriptionWidgets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
     final TextEditingController taskTitleController = TextEditingController(
       text: taskTitle ?? '', // Set giá trị ban đầu từ parameter
     );
@@ -30,26 +32,45 @@ class EditTaskDescriptionWidgets extends StatelessWidget {
       title: Text('Add task'),
       content: SizedBox(
         width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: taskTitleController,
-              decoration: InputDecoration(
-                labelText: 'Task Title',
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomTextField(
+                label: 'Task Title',
+                controller: taskTitleController,
                 border: OutlineInputBorder(),
+                validator: (p0) {
+                  if (p0 == null || p0.isEmpty) {
+                    return 'Please enter a task title';
+                  }
+                  return null;
+                },
               ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              maxLines: 2,
-              controller: taskDescriptionController,
-              decoration: InputDecoration(
-                labelText: 'Task Description',
+              SizedBox(height: 10),
+              CustomTextField(
+                label: 'Task Description',
+                controller: taskDescriptionController,
                 border: OutlineInputBorder(),
+                builder: (textField) => TextFormField(
+                  controller: textField.controller,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    labelText: 'Task Description',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 2,
+                  validator: (p0) {
+                    if (p0 == null || p0.isEmpty) {
+                      return 'Please enter a task description';
+                    }
+                    return null;
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       actions: [
@@ -64,11 +85,13 @@ class EditTaskDescriptionWidgets extends StatelessWidget {
             // Here you can handle the save action, e.g., save the task
             String title = taskTitleController.text;
             String description = taskDescriptionController.text;
-            // Save the task with title and description
-            Navigator.pop(context, {
-              'title': title,
-              'description': description,
-            });
+            if (_formKey.currentState?.validate() ?? false) {
+              // Save the task with title and description
+              Navigator.pop(context, {
+                'title': title,
+                'description': description,
+              });
+            }
           },
           child: Text('Save'),
         ),

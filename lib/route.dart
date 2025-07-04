@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/auth_wrapper.dart';
 import 'package:flutter_application_1/models/todo_model2.dart';
 import 'package:flutter_application_1/views/screens/addtask_page.dart';
+import 'package:flutter_application_1/views/screens/blog_page.dart';
 import 'package:flutter_application_1/views/screens/edittask_page.dart';
 import 'package:flutter_application_1/views/screens/list_friend_page.dart';
+import 'package:flutter_application_1/views/screens/search_blog_page.dart';
 import 'package:flutter_application_1/views/screens/setting_page.dart';
 import 'package:flutter_application_1/views/screens/signin_page.dart';
 import 'package:flutter_application_1/views/screens/signup_page.dart';
@@ -40,6 +42,8 @@ final GoRouter route = GoRouter(
       path: '/home',
       builder: (BuildContext context, GoRouterState state) {
         return WidgetTree();
+        // return BlogPage();
+        // return ListFriendPage();
       },
       routes: <RouteBase>[
         GoRoute(
@@ -70,6 +74,20 @@ final GoRouter route = GoRouter(
           name: 'list-friend',
           builder: (context, state) {
             return const ListFriendPage();
+          },
+        ),
+        GoRoute(
+          path: 'blog',
+          name: 'blog',
+          builder: (context, state) {
+            return const BlogPage();
+          },
+        ),
+        GoRoute(
+          path: 'search',
+          name: 'search',
+          builder: (context, state) {
+            return const SearchPage();
           },
         ),
       ],

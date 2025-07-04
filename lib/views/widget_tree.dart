@@ -18,22 +18,33 @@ class WidgetTree extends StatelessWidget {
             title: Text(KNavbar.pageNavBar().elementAt(selectedPage)['title']),
             actions: [
               if (KNavbar.pageNavBar().elementAt(selectedPage)['title'] !=
-                  'Profile')
+                      'Profile' &&
+                  KNavbar.pageNavBar().elementAt(selectedPage)['title'] !=
+                      'Focus')
                 IconButton(
                   onPressed: () {
-                    // context.pushNamed('setting');
+                    context.pushNamed('blog');
                   },
-                  icon: CircleAvatar(
-                    radius: 20,
-                    backgroundImage: AssetImage('/images/profile.jpg'),
-                    backgroundColor: Colors.grey[300],
-                  ),
+                  icon: Icon(Icons.article),
                 ),
+              const SizedBox(width: 4),
+              IconButton(
+                onPressed: () {
+                  // context.pushNamed('setting');
+                },
+                icon: CircleAvatar(
+                  radius: 20,
+                  backgroundImage: AssetImage('/images/profile.jpg'),
+                  backgroundColor: Colors.grey[300],
+                ),
+              ),
             ],
             centerTitle: true,
             leading:
                 KNavbar.pageNavBar().elementAt(selectedPage)['title'] !=
-                    'Profile'
+                        'Profile' &&
+                    KNavbar.pageNavBar().elementAt(selectedPage)['title'] !=
+                        'Focus'
                 ? IconButton(
                     onPressed: () {
                       context.pushNamed('list-friend');
